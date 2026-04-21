@@ -32,6 +32,12 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             persistence: PersistenceService(),
             hotkeyService: HotkeyService()
         )
+        viewModel.onOpenSettings = { [weak self] in
+            self?.openSettingsWindow()
+        }
+        viewModel.onQuitApp = {
+            NSApp.terminate(nil)
+        }
         self.viewModel = viewModel
 
         let controller = PanelController(viewModel: viewModel)
@@ -43,6 +49,14 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         // Re-anchor when the user explicitly changes the corner. Theme and
         // other settings do not move the window.
         trackAnchorChanges()
+    }
+
+    private func openSettingsWindow() {
+        NSApp.activate(ignoringOtherApps: true)
+        let opened = NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
+        if !opened {
+            _ = NSApp.sendAction(Selector(("showPreferencesWindow:")), to: nil, from: nil)
+        }
     }
 
     /// Uses `Observation.withObservationTracking` to observe `widgetAnchor`

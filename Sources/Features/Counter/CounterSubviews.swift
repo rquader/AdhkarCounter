@@ -5,20 +5,22 @@ import SwiftUI
 struct WidgetHeaderView: View {
     @Bindable var viewModel: CounterViewModel
     @State private var isHoveringGear: Bool = false
+    @State private var isHoveringQuit: Bool = false
+    @State private var isSettingsShown: Bool = false
 
     var body: some View {
         HStack(spacing: DesignTokens.Spacing.m) {
-            Button(action: openSettings) {
-                Image(systemName: "slider.horizontal.3")
+            Button(action: viewModel.quitAppRequested) {
+                Image(systemName: "xmark.circle")
                     .imageScale(.small)
-                    .foregroundStyle(isHoveringGear ? .secondary : .tertiary)
+                    .foregroundStyle(isHoveringQuit ? .secondary : .tertiary)
                     .padding(DesignTokens.Spacing.xs)
                     .contentShape(Rectangle())
             }
             .buttonStyle(.plain)
-            .onHover { isHoveringGear = $0 }
-            .accessibilityLabel("Open Settings")
-            .help("Settings (⌘,)")
+            .onHover { isHoveringQuit = $0 }
+            .accessibilityLabel("Quit AdhkarCounter")
+            .help("Quit AdhkarCounter")
 
             Spacer(minLength: 0)
 
@@ -29,19 +31,26 @@ struct WidgetHeaderView: View {
 
             Spacer(minLength: 0)
 
-            // Symmetry slot keeps the title visually centered.
-            Color.clear
-                .frame(width: 18, height: 18)
+            Button {
+                isSettingsShown.toggle()
+            } label: {
+                Image(systemName: "slider.horizontal.3")
+                    .imageScale(.small)
+                    .foregroundStyle(isHoveringGear ? .secondary : .tertiary)
+                    .padding(DesignTokens.Spacing.xs)
+                    .contentShape(Rectangle())
+            }
+            .buttonStyle(.plain)
+            .onHover { isHoveringGear = $0 }
+            .accessibilityLabel("Open Settings")
+            .help("Settings")
+            .popover(isPresented: $isSettingsShown, arrowEdge: .top) {
+                SettingsView(viewModel: viewModel)
+                    .frame(width: 420, height: 460)
+                    .padding(.vertical, DesignTokens.Spacing.xs)
+            }
         }
         .frame(height: 18)
-    }
-
-    private func openSettings() {
-        // Activate the app so the Settings scene can be fronted, then request
-        // SwiftUI to show it. The selector is spelled as a dynamic string to
-        // avoid referencing an API symbol not available at compile time.
-        NSApp.activate(ignoringOtherApps: true)
-        NSApp.sendAction(Selector(("showSettingsWindow:")), to: nil, from: nil)
     }
 }
 
@@ -50,6 +59,7 @@ struct WidgetHeaderView: View {
 struct CounterNumeralView: View {
     let displayed: Int
     let isComplete: Bool
+    let showRing: Bool
     let progress: Double
     let palette: ThemePalette
     let pulse: Bool
@@ -58,7 +68,7 @@ struct CounterNumeralView: View {
     var body: some View {
         Button(action: onIncrement) {
             ZStack {
-                if progress > 0 {
+                if showRing {
                     ProgressRingView(progress: progress, palette: palette, isComplete: isComplete)
                         .frame(
                             width: DesignTokens.Size.progressRingDiameter,

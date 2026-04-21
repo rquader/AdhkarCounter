@@ -9,7 +9,6 @@ struct SettingsView: View {
             targetSection
             hotkeySection
             placementSection
-            privacySection
         }
         .formStyle(.grouped)
         .scrollContentBackground(.hidden)
@@ -136,18 +135,6 @@ struct SettingsView: View {
         }
     }
 
-    @ViewBuilder
-    private var privacySection: some View {
-        Section {
-            Label {
-                Text("No network, no analytics, no accounts.")
-                    .font(DesignTokens.Typography.caption)
-            } icon: {
-                Image(systemName: "lock.shield")
-                    .foregroundStyle(.secondary)
-            }
-        }
-    }
 }
 
 /// A small themed row for the theme picker. Shows a swatch + display name.

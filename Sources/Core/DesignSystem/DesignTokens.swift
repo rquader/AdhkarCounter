@@ -23,10 +23,10 @@ enum DesignTokens {
 
     enum Size {
         /// Compact default footprint of the main widget panel.
-        static let widgetWidth: CGFloat = 260
-        static let widgetHeight: CGFloat = 132
+        static let widgetWidth: CGFloat = 272
+        static let widgetHeight: CGFloat = 152
         static let panelPadding: CGFloat = 14
-        static let progressRingDiameter: CGFloat = 96
+        static let progressRingDiameter: CGFloat = 104
         static let progressRingStroke: CGFloat = 4
     }
 

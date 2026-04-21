@@ -17,9 +17,11 @@ final class CounterViewModel {
     var appTheme: AppTheme
     var showProgressRing: Bool
 
-    var isResetConfirmationShown: Bool
     /// Drives the increment "pulse" micro-interaction.
     private(set) var pulseToken: Int
+    private var hasIncrementedThisLaunch: Bool
+    var onOpenSettings: (() -> Void)?
+    var onQuitApp: (() -> Void)?
 
     init(persistence: Persisting, hotkeyService: HotkeyManaging) {
         self.persistence = persistence
@@ -35,8 +37,8 @@ final class CounterViewModel {
         self.widgetAnchor = snapshot.widgetAnchor
         self.appTheme = snapshot.theme
         self.showProgressRing = snapshot.showProgressRing
-        self.isResetConfirmationShown = false
         self.pulseToken = 0
+        self.hasIncrementedThisLaunch = false
     }
 
     // MARK: - Derived
@@ -73,6 +75,9 @@ final class CounterViewModel {
     /// Subtitle line shown beneath the numeral. Switches between target progress
     /// and a quiet hotkey hint.
     var subtitle: String {
+        if !hasIncrementedThisLaunch {
+            return "Press \(hotkey.shortDescription) or click to count"
+        }
         if let target = targetCount {
             switch displayMode {
             case .completed: return "\(currentCount) of \(target)"
@@ -96,18 +101,14 @@ final class CounterViewModel {
     // MARK: - Mutations
 
     func increment() {
+        hasIncrementedThisLaunch = true
         currentCount += 1
         pulseToken &+= 1
         persist()
     }
 
-    func requestReset() {
-        isResetConfirmationShown = true
-    }
-
     func resetConfirmed() {
         currentCount = 0
-        isResetConfirmationShown = false
         persist()
     }
 
@@ -130,6 +131,14 @@ final class CounterViewModel {
         }
         hotkeyService.startListening(binding: hotkey)
         persist()
+    }
+
+    func openSettingsRequested() {
+        onOpenSettings?()
+    }
+
+    func quitAppRequested() {
+        onQuitApp?()
     }
 
     // MARK: - Internals

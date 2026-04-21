@@ -22,7 +22,8 @@ struct CounterWidgetView: View {
                 CounterNumeralView(
                     displayed: viewModel.displayedCount,
                     isComplete: viewModel.hasReachedTarget,
-                    progress: viewModel.showProgressRing ? viewModel.progress : 0,
+                    showRing: viewModel.showProgressRing && viewModel.targetCount != nil,
+                    progress: viewModel.progress,
                     palette: palette,
                     pulse: pulse,
                     onIncrement: handleIncrement
@@ -33,7 +34,7 @@ struct CounterWidgetView: View {
                     text: viewModel.subtitle,
                     isComplete: viewModel.hasReachedTarget,
                     palette: palette,
-                    onReset: viewModel.requestReset
+                    onReset: viewModel.resetConfirmed
                 )
             }
             .padding(DesignTokens.Size.panelPadding)
@@ -44,14 +45,6 @@ struct CounterWidgetView: View {
         )
         .onChange(of: viewModel.pulseToken) { _, _ in
             triggerPulse()
-        }
-        .alert("Reset counter?", isPresented: $viewModel.isResetConfirmationShown) {
-            Button("Cancel", role: .cancel) {}
-            Button("Reset", role: .destructive) {
-                viewModel.resetConfirmed()
-            }
-        } message: {
-            Text("This will reset your current count to zero.")
         }
     }
 

@@ -93,9 +93,9 @@ struct AppStateSnapshot: Codable {
 extension AppStateSnapshot {
     static let `default` = AppStateSnapshot(
         currentCount: 0,
-        targetPreset: .off,
+        targetPreset: .oneHundred,
         customTarget: nil,
-        displayMode: .completed,
+        displayMode: .remaining,
         hotkey: HotkeyBinding(key: "=", modifiers: [.control, .option]),
         requiresModifier: true,
         widgetAnchor: .topRight,
@@ -115,9 +115,9 @@ extension AppStateSnapshot {
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         self.currentCount = try container.decodeIfPresent(Int.self, forKey: .currentCount) ?? 0
-        self.targetPreset = try container.decodeIfPresent(TargetPreset.self, forKey: .targetPreset) ?? .off
+        self.targetPreset = try container.decodeIfPresent(TargetPreset.self, forKey: .targetPreset) ?? .oneHundred
         self.customTarget = try container.decodeIfPresent(Int.self, forKey: .customTarget)
-        self.displayMode = try container.decodeIfPresent(DisplayMode.self, forKey: .displayMode) ?? .completed
+        self.displayMode = try container.decodeIfPresent(DisplayMode.self, forKey: .displayMode) ?? .remaining
         self.requiresModifier = try container.decodeIfPresent(Bool.self, forKey: .requiresModifier) ?? true
         self.widgetAnchor = try container.decodeIfPresent(WidgetAnchor.self, forKey: .widgetAnchor) ?? .topRight
         self.theme = try container.decodeIfPresent(AppTheme.self, forKey: .theme) ?? .naturalGreen
